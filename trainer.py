@@ -6,26 +6,43 @@ pygame.mixer.init()
 from notesview import *
 
 IGNOREOCTAVES=False
+NOTEMIN, NOTEMAX=36, 84 #c1 to c5
+
+class Bar:
+	def __init__(self, rect, color, maxval, val=0):
+		self.rect=rect
+		self.maxval=maxval
+		self.color=color
+		self.val=val
+
+	def draw(self, surf):
+		pygame.draw.rect(surf, self.color, pygame.Rect(self.rect.topleft,
+           (self.val/self.maxval*self.rect.width, self.rect.height)))
+
 
 for i in range(pygame.midi.get_count()):
 	info=pygame.midi.get_device_info(i)
 	if info[2]: #only if input
 		print("Device: ", i, info)
 
-
 screen=pygame.display.set_mode([960, 480])
 clock=pygame.time.Clock()
 
 midi=pygame.midi.Input(3)
-kbd=NotesView((240, 200))
-task=NotesView((710, 200))
+kbd=NotesView((240, 240))
+task=NotesView((710, 240))
 
 right=pygame.mixer.Sound(os.path.join("sfx", "right.wav"))
 wrong1=pygame.mixer.Sound(os.path.join("sfx", "wrong_1.wav"))
 wrong2=pygame.mixer.Sound(os.path.join("sfx", "wrong_2.wav"))
 
-nextNote=random.randint(36, 84)
+nextNote=random.randint(NOTEMIN, NOTEMAX)
 task.setNote(nextNote, True)
+
+bar=Bar(pygame.Rect(30, 20, 900, 20), (123, 123, 0), 30000, 30000)
+score=0
+
+bgcolor=(255, 255, 255)
 
 try:
 	while True:
@@ -39,18 +56,26 @@ try:
 					kbd.setNote(event[0][1], True)
 					if event[0][1] == nextNote or (IGNOREOCTAVES and kbd.noteName(event[0][1]) == kbd.noteName(nextNote)):
 						right.play()
+						score+=1
+						bar.val+=1000
+						bgcolor=random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
 						task.setNote(nextNote, False)
-						nextNote=random.randint(36, 84)
+						nextNote=random.randint(NOTEMIN, NOTEMAX)
 						task.setNote(nextNote, True)
 					else:
-						random.choice([wrong1, wrong2]).play()
+						bar.val-=1000
+						random.choice([wrong1]).play()
 				else:
 					kbd.setNote(event[0][1], False)
 
-		screen.fill((255, 255, 255))
+		screen.fill(bgcolor)
 		kbd.draw(screen)
 		task.draw(screen)
+		bar.draw(screen)
 		pygame.display.update()
-		clock.tick(24)
+		bar.val-=clock.tick(24)
+		if bar.val <= 0:
+			print("Score:", score)
+			break
 finally:
 	midi.close()
