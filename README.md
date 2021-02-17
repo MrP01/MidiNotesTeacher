@@ -1,6 +1,7 @@
 # MidiNotesTeacher
-A simple keyboard/midi liveview and notes Trainer
 
-Using Python and Pygame
+A simple keyboard/midi liveview and notes Trainer.
 
-Sounds from soundbible.com
+Using Python and Pygame.
+
+Sounds from [soundbible.com](https://www.soundbible.com/)
