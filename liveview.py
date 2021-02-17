@@ -1,24 +1,13 @@
-import pygame.midi
 import sys
 
-pygame.init()
-pygame.midi.init()
+import pygame.midi
 
-from notesview import *
+from notesview import BaseNotesView, init
 
-screen = pygame.display.set_mode([640, 480])
-clock = pygame.time.Clock()
+screen, clock, midi = init()
+view = BaseNotesView((300, 200))
 
-for i in range(pygame.midi.get_count()):
-    info = pygame.midi.get_device_info(i)
-    if info[2]:  # only if input
-        print("Device: ", i, info)
-
-midi = pygame.midi.Input(3)
-
-view = NotesView((300, 200))
-
-try:
+if __name__ == '__main__':
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -35,5 +24,3 @@ try:
         view.draw(screen)
         pygame.display.update()
         clock.tick(24)
-finally:
-    midi.close()

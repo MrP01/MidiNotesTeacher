@@ -1,3 +1,5 @@
+import os
+
 import pygame.midi
 import pygame.mixer
 import random
@@ -7,7 +9,7 @@ pygame.init()
 pygame.midi.init()
 pygame.mixer.init()
 
-from notesview import *
+from notesview import BaseNotesView
 
 IGNOREOCTAVES = False
 NOTEMIN, NOTEMAX = 36, 84  # c1 to c5
@@ -34,8 +36,8 @@ screen = pygame.display.set_mode([960, 480])
 clock = pygame.time.Clock()
 
 midi = pygame.midi.Input(3)
-kbd = NotesView((240, 240))
-task = NotesView((710, 240))
+kbd = BaseNotesView((240, 240))
+task = BaseNotesView((710, 240))
 
 right = pygame.mixer.Sound(os.path.join("sfx", "right.wav"))
 wrong1 = pygame.mixer.Sound(os.path.join("sfx", "wrong_1.wav"))

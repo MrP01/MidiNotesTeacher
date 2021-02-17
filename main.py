@@ -4,18 +4,9 @@ import sys
 import pygame
 import pygame.midi
 
-pygame.init()
-pygame.midi.init()
+from notesview import init
 
-screen = pygame.display.set_mode([640, 480])
-clock = pygame.time.Clock()
-
-for i in range(pygame.midi.get_count()):
-    info = pygame.midi.get_device_info(i)
-    if info[2]:  # only if input
-        print("Device: ", i, info)
-
-midi = pygame.midi.Input(3)
+screen, clock, midi = init()
 
 
 class NotesView(object):
@@ -71,7 +62,7 @@ class NotesView(object):
             if val:
                 n = key - 36
                 pygame.draw.circle(surf, NotesView.noteColor,
-                    (self.x + NotesView.noteOffset, self.y + NotesView.lineGap * n))
+                    (self.x + NotesView.noteOffset, self.y + NotesView.lineGap * n), 3)
 
 
 view = NotesView((100, 100))

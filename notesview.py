@@ -1,8 +1,22 @@
 import os
+
 import pygame
 
 
-class NotesView(object):
+def init():
+    pygame.init()
+    pygame.midi.init()
+    screen = pygame.display.set_mode([640, 480])
+    clock = pygame.time.Clock()
+    for i in range(pygame.midi.get_count()):
+        info = pygame.midi.get_device_info(i)
+        if info[2]:  # only if input
+            print("Device: ", i, info)
+    midi = pygame.midi.Input(3)
+    return screen, clock, midi
+
+
+class BaseNotesView(object):
     lineGap = 11.15
     noteColor = (255, 0, 0)
     noteRadius = 12
@@ -26,7 +40,8 @@ class NotesView(object):
         note = (key - 36) % 12
         return self.noteNames[note]
 
-    def noteOctave(self, key):
+    @staticmethod
+    def noteOctave(key):
         return int((key - 36) / 12)
 
     def whiteNoteIndex(self, key):
@@ -36,8 +51,7 @@ class NotesView(object):
         surf.blit(self.sheet, self.rect.topleft)
         for key, val in self.notes.items():
             if val:
-                pos = (
-                self.rect.left + self.noteOffset, self.rect.bottom - int(self.lineGap * self.whiteNoteIndex(key)))
+                pos = self.rect.left + self.noteOffset, self.rect.bottom - int(self.lineGap * self.whiteNoteIndex(key))
                 pygame.draw.circle(surf, self.noteColor, pos, self.noteRadius)
                 if self.noteName(key).endswith("#"):
                     surf.blit(self.sharp, (pos[0] - 28, pos[1] - 18))
